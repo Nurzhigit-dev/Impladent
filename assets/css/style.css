@@ -424,24 +424,39 @@ dl,dd{ margin:0; }
 .hours-row span:first-child{ color:var(--muted-dark); }
 .hours-row.is-off span:last-child{ color:var(--muted-dark); }
 
+/* min-width:0 обязателен: по умолчанию grid-элемент имеет min-width:auto и
+   раздувается под свою min-content ширину — на узких экранах (320px) карта
+   вылезала за вьюпорт и появлялась горизонтальная прокрутка. */
+.contact-grid > *{ min-width:0; }
 .map-frame{
-  position:relative;
+  position:relative; min-width:0;
   border-radius:var(--radius-lg); overflow:hidden;
   border:1px solid var(--ink-line); background:var(--ink-2);
-  aspect-ratio:4/3; min-height:260px;
+  /* Без min-height: вместе с aspect-ratio он задавал бы и минимальную ШИРИНУ
+     (260 * 4/3 ≈ 347px), а это шире экрана на 320–375px. Высоту полностью
+     определяет соотношение сторон. */
+  aspect-ratio:4/3;
 }
 /* Карта лежит поверх подложки: загрузилась — перекрыла, нет — виден адрес. */
 .map-fallback{
   position:absolute; inset:0; z-index:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:var(--s-2); padding:var(--s-6) var(--s-5); text-align:center;
+  gap:var(--s-2); padding:var(--s-6) var(--s-4); text-align:center;
   background:
     radial-gradient(circle at 50% 42%, rgba(199,154,91,.16), transparent 62%),
     var(--ink-2);
 }
+.map-fallback > *{ max-width:100%; }
 .map-fallback svg{ width:38px; height:38px; color:var(--gold); margin-bottom:var(--s-1); }
 .map-fallback-addr{ font-family:var(--font-display); font-weight:700; font-size:1.35rem; color:#F5F1EA; }
-.map-fallback-city{ font-size:.9rem; color:var(--muted-dark); margin-bottom:var(--s-4); }
+.map-fallback-city{ font-size:.9rem; color:var(--muted-dark); margin-bottom:var(--s-4); text-wrap:balance; }
+.map-fallback .btn{ padding-inline:18px; font-size:.95rem; }
+/* На узких экранах карта делается квадратной: при 4/3 высоты не хватало и
+   подложка с адресом обрезалась (на 320px не помещалось ~35px). */
+@media (max-width:479px){
+  .map-frame{ aspect-ratio:1/1; }
+  .map-fallback{ padding:var(--s-5) var(--s-4); }
+}
 .map-frame iframe{
   position:relative; z-index:1;
   width:100%; height:100%; border:0; display:block;
